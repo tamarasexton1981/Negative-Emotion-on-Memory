@@ -1,0 +1,118 @@
+---
+title: "Negative Emotions on Memory"
+author: "Sexton/Houtz"
+date: "May 11, 2016"
+output: html_document
+---
+
+This is an experiment examing the effects of negative emotions (fear, sadness, and disgust) on working memory function. To begin our analyses, I imported the data set, set the working directory, and commanded R to read the csv file with the following commands:
+```{r}
+dat<-read.csv("Experimentdata.csv")
+```
+Next, we will look at the structure of our data.
+```{r}
+str(dat)
+```
+As you can see, we have 71 observations of 17 variables, 16 of which are listed as integer variables. The other variable, a factor variable, titled condition, consists of four levels: "fear", "sadness", "disgust", and "control".
+Next we will do some simple calculations examing the mean score of different variables. We need to load some packages that we will be using later, so enter the following command:
+```{r}
+library(ggplot2)
+library(gplots)
+library(dplyr)
+```
+To check the mean score of words rememebered overall:
+```{r}
+ mean(dat$wordsremembered)
+```
+To examine the mean score of words remembered within each group use the following command:
+```{r}
+mean(dat$wordsremembered[dat$condition=="fear"])
+```
+We will continue with the formula above, substituting each of the four conditions to get the mean number of words remembered for each condition.
+```{r}
+mean(dat$wordsremembered[dat$condition=="disgust"])
+```
+```{r}
+mean(dat$wordsremembered[dat$condition=="sadness"])
+```
+```{r}
+mean(dat$wordsremembered[dat$condition=="neutral"])
+```
+Now we will run a one-way ANOVA examing the effects of condition on the number of words remembered.First we will set temp and tell R to use all of the conditions.
+```{r}
+temp<-dat
+```
+Then we will run our ANOVA
+```{r}
+summary(aov(wordsremembered~condition, data=temp))
+```
+As you can see, the results of our one-way ANOVA are not significant, as F(3,67) = .91, and p = .44
+We will now create a line graph that plots the mean number of words remembered for each condition. We will first summarize the data
+```{r}
+temp<-dat%>%group_by(condition)%>%
+summarize(means=mean(wordsremembered),                    sems=sd(wordsremembered)/sqrt(length(wordsremembered)))
+```
+Then we can create our line graph.
+```{r}
+f<-ggplot(temp, aes(x=as.factor(condition),y=means,
+group=1))+
+  geom_line(size=1)+
+  geom_point(size=2)+
+geom_errorbar(aes(ymax=means+sems,ymin=means-sems),width=.2)+
+ggtitle("The Effect of Negative Emotions on Memory")+
+labs(x="Emotional Condition",y="Mean Words Remembered")+
+theme(plot.title=element_text(size=15,face="bold",vjust=.5))+
+theme(axis.title.x=element_text(size=12,face="bold",vjust=-.25))+
+theme(axis.title.y=element_text(size=12,face="bold",vjust=1))+
+theme(axis.text.x=element_text(size=10,face="bold",color="black"))+
+theme(axis.text.y=element_text(size=10,face="bold",color="black"))+
+coord_cartesian(ylim=c(min(temp$means)-2*max(temp$sems),                       max(temp$means)+2*max(temp$sems)))+
+theme(panel.border=element_blank(),axis.line=element_line())+
+theme(panel.grid.major.x=element_blank())+
+theme(panel.grid.major.y=element_line(color="darkgrey"))+
+theme(panel.grid.minor.y=element_blank())
+ f
+```
+From our graph, it appears that fear disrupted memory the most, and the other three conditions were relatively similar in memory affect.
+```{r}
+temp<-dat%>%group_by(condition)%>%
+summarize(means=mean(wordsremembered),                    sems=sd(wordsremembered)/sqrt(length(wordsremembered)))
+```
+Next we will create our bar graph
+```{r}
+f<-ggplot(temp,aes(x=factor(condition),y=means))+
+geom_bar(stat="identity", color="black",
+fill=c("deepskyblue2", "deeppink", "green","red"))+
+geom_errorbar(aes(ymax=means+sems,
+ymin=means-sems),
+width=.2)+
+ggtitle("The Effect of Negative Emotions on Memory")+
+labs(x="Emotional Condition", y="Mean Words Recalled")+
+scale_x_discrete(breaks=c("fear","disgust","sadness","neutral"),
+labels=c("Fear","Disgust","Sadness","Neutral"))+
+theme(plot.title=element_text(size=15,
+face="bold",
+vjust=.5))+
+theme(axis.title.x=element_text(size=12,
+face="bold",
+vjust=-.25))+
+theme(axis.title.y=element_text(size=12,
+face="bold",
+vjust=.25))+
+theme(axis.text.x=element_text(size=10,
+face="bold",
+color="black"))+
+theme(axis.text.y=element_text(size=10,
+face="bold",
+color="black"))+
+coord_cartesian(ylim=c(min(temp$means)-2*max(temp$sems),
+max(temp$means)+2*max(temp$sems)))+
+theme(panel.border=element_blank(),
+axis.line=element_line())+
+theme(panel.grid.major.x=element_blank())+
+theme(panel.grid.major.y=element_line(color="darkgrey"))+
+theme(panel.grid.minor.y=element_blank())
+f
+```
+The bar graph gives us a better perspective of the differences between each condition. Although the fear condition recalled numerically fewer words in the recall portion of the test, the results were not significanly different from the other conditions, as F (3,67), and p = .44
+
