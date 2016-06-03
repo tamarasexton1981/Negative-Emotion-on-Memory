@@ -1,6 +1,7 @@
 # Negative-Emotion-on-Memory
 #Negative-Emotions-on-Memory-Recall
-###This contains descriptions for the content of each file within the repository###
+###This contains descriptions for the content of each file within the repository.###
+###CLICK ON THE 'NEGATIVE EMOTION ON MEMORY' FILE TO SEE THE CORRESPONDING FOLDERS###
 ####DATA ANALYSIS####
 
 Experimentdata.csv--Within this file, you will find the raw data from our experiment. We had four conditions, fear, disgust, sadness, and neutral. 
